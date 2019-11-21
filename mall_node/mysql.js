@@ -100,7 +100,7 @@ export class _mysql {
     }
     //修改个人信息
     update_user_info(callback) {
-        this.connection.query('update t_user set user_name = ?,introduce = ?, email =? where user_id = ?',
+        this.connection.query('update t_user set user_name = ?,introduce = ?,email =? where user_id = ?',
             [this.getData.userName, this.getData.introduce, this.getData.email, this.getData.userId], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
@@ -108,7 +108,7 @@ export class _mysql {
     }
     //农产品模糊查询
     searchGoods(callback) {
-        this.connection.query("select g.*,s.sort_name,p.shop_name from t_goods_info g,t_sort s,t_shop_info p where g.goods_name like '% " + this.getData.search + "%' or g.goods_name like  '% " + this.getData.search + " %' and g.is_shop = 1 and g.sort_id = s.id and g.shop_id = p.id",
+        this.connection.query("select g.*,s.sort_name,p.shop_name from t_goods_info g,t_sort s,t_shop_info p where g.goods_name like '% " + this.getData.search + "%' and g.is_shop = 1 and g.sort_id = s.id and g.shop_id = p.id",
             [], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
@@ -141,7 +141,7 @@ export class _mysql {
     //根据店铺查询商品列表
     getGoodsInfoByShop(callback) {
         this.connection.query('select g.*,s.sort_name,p.shop_name from t_goods_info g,t_sort s,t_shop_info p where g.shop_id = ? and g.sort_id = s.id and p.id = ? ',
-            [this.getData.goodsId], function (err, rs, fields) {
+            [this.getData.shopId,this.getData.shopId], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
             })
@@ -157,14 +157,14 @@ export class _mysql {
     }
     //商品上架
     goodsAddShop(callback) {
-        this.connection.query('update t_goods_info set is_ship = 1 where id = ?', [this.getData.goodsId], function (err, rs, fields) {
+        this.connection.query('update t_goods_info set is_shop = 1 where id = ?', [this.getData.goodsId], function (err, rs, fields) {
             console.log(rs)
             return callback(err, rs, fields)
         })
     }
     //商品下架
     goodsRemoveShop(callback) {
-        this.connection.query('update t_goods_info set is_ship = 0 where id = ?', [this.getData.goodsId], function (err, rs, fields) {
+        this.connection.query('update t_goods_info set is_shop = 0 where id = ?', [this.getData.goodsId], function (err, rs, fields) {
             console.log(rs)
             return callback(err, rs, fields)
         })
@@ -188,7 +188,7 @@ export class _mysql {
     }
     //获取购物车信息
     getShoppingCartInfo(callback) {
-        this.connection.query('select c.*,u.user_name,g.* from t_shoppingcart_info c,t_goods_info g,t_user t where c.user_id = u.id and c.goods_id = g.id and c.user_id = ?',
+        this.connection.query('select c.*,u.user_name,g.* from t_shoppingcart_info c,t_goods_info g,t_user u where c.user_id = u.id and c.goods_id = g.id and c.user_id = ?',
             [this.getData.userId], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
@@ -196,10 +196,11 @@ export class _mysql {
     }
     //加入购物车
     addShoppingCart(callback) {
-        this.connection.query('insert into t_shoppingcart_info (user_id,goods_id,count) value (?,?,?)', [this.getData.nowPrice, this.getData.goodsId], function (err, rs, fields) {
-            console.log(rs)
-            return callback(err, rs, fields)
-        })
+        this.connection.query('insert into t_shoppingcart_info (user_id,goods_id,count) value (?,?,?)',
+            [this.getData.userId, this.getData.goodsId, this.getData.count], function (err, rs, fields) {
+                console.log(rs)
+                return callback(err, rs, fields)
+            })
     }
     //修改购物车商品数量
     updateShoppingCartCount(callback) {
@@ -218,8 +219,16 @@ export class _mysql {
     //商品结算
     addOrder(callback) {
         let time = new Date()
-        this.connection.query('insert into from t_order_info (order_number,send_place,achieve_place,send_id,achieve_id,price_total,goods_id) value (?,?,?,?,?,?,?)',
+        this.connection.query('insert into t_order_info (order_number,send_place,achieve_place,send_id,achieve_id,price_total,goods_id) value (?,?,?,?,?,?,?)',
             [time.getTime(), this.getData.sendPlace, this.getData.achievePlace, this.getData.sendId, this.getData.achieveId, this.getData.priceTotal, this.getData.goodsId], function (err, rs, fields) {
+                console.log(rs)
+                return callback(err, rs, fields)
+            })
+    }
+    //订单列表
+    selectOrderInfo(callback) {
+        this.connection.query('select o.*,g.* from t_order_info o,t_goods_info g where o.goods_id = g.id and o.achieve_id = ?',
+            [this.getData.userId, this.getData.userId], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
             })
@@ -234,16 +243,15 @@ export class _mysql {
     //查询二级分类
     selectSecondSort(callback) {
 
-        this.connection.query('select s.*,f.user_name from t_sort s,t_user f where s.user_id = f.id and s.parents_id = ? and s.level = 1',
-            [this.getData.sortId], function (err, rs, fields) {
+        this.connection.query('select s.*,f.user_name from t_sort s,t_user f where s.user_id = f.id and s.level = 1',
+            [], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
             })
     }//查询三级分类
     selectThirdSort(callback) {
-
-        this.connection.query('select s.*,f.user_name from t_sort s,t_user f where s.user_id = f.id and s.parents_id = ? and s.level = 2',
-            [this.getData.sortId], function (err, rs, fields) {
+        this.connection.query('select s.*,f.user_name from t_sort s,t_user f where s.user_id = f.id and s.level = 2',
+            [], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
             })

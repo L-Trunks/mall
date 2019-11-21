@@ -6,7 +6,8 @@ import {
     GetFirstSort,//查询一级分类
     GetSecondSort,//查询二级分类
     GetThirdSort,//查询三级分类
-    GetAddressById//根据id获取地址列表
+    GetAddressById,//根据id获取地址列表
+    SelectOrderInfo
 
 } from '../api/goods_api'
 import {
@@ -89,8 +90,16 @@ const actions = {
         }).catch(err => {
             this.$message.error(err.message && err.message || '服务器跑丢了')
         })
-    }
-    
+    },
+    //订单列表
+    getOrderInfo(context, params) {
+        SelectOrderInfo({ params: params }).then(res => {
+            context.commit('changeOrderInfo', res.data);
+        }).catch(err => {
+            this.$message.error(err.message && err.message || '服务器跑丢了')
+        })
+    },
+
 }
 
 export default actions;

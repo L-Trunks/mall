@@ -15,7 +15,7 @@
             <el-input size="mini" v-model="loginForm.phone" maxlength="11" placeholder="11位手机号码"></el-input>
           </el-form-item>
           <el-form-item label="密码:" prop="passWord">
-            <el-input size="mini" v-model="loginForm.passWord" placeholder="请输入密码"></el-input>
+            <el-input type="password" size="mini" v-model="loginForm.passWord" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="mini" type="info" @click="userLogin('loginForm')">登录</el-button>
@@ -27,9 +27,10 @@
         <div class="is_login" v-else>{{userInfo[0].user_name}}您好，欢迎来到XXX农产品商城</div>
       </el-col>
     </el-row>
-    <el-row :gutter="20">
-      <el-col :span="20" :offset="2"></el-col>
+    <el-row :span="20" :offset="2">
+      <search-box></search-box>
     </el-row>
+
     <el-dialog title="用户注册" :visible.sync="dialogFormVisible">
       <el-form :model="registerForm" :rules="registerRules" ref="registerForm">
         <el-form-item label="手机号：" :label-width="formLabelWidth" prop="phone">
@@ -39,16 +40,16 @@
           <el-input v-model="registerForm.userName"></el-input>
         </el-form-item>
         <el-form-item label="密码：" :label-width="formLabelWidth" prop="passWord">
-          <el-input v-model="registerForm.passWord"></el-input>
+          <el-input type="password" v-model="registerForm.passWord"></el-input>
         </el-form-item>
         <el-form-item label="确认密码" :label-width="formLabelWidth" prop="confirmPassWord">
-          <el-input v-model="registerForm.confirmPassWord"></el-input>
+          <el-input type="password" v-model="registerForm.confirmPassWord"></el-input>
         </el-form-item>
         <el-form-item label="邮箱：" :label-width="formLabelWidth" prop="email">
           <el-input v-model="registerForm.email"></el-input>
         </el-form-item>
         <el-form-item label="个人简介：" :label-width="formLabelWidth" prop="introduce">
-          <el-input v-model="registerForm.introduce"></el-input>
+          <el-input type="textarea" v-model="registerForm.introduce"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -68,7 +69,8 @@ import {
   UserAddShop, //开通店铺
   GetUserInfo //获取用户信息
 } from "../api/user_api";
-import { mapState, mapMutations } from "vuex";
+import SearchBox from "../components/SearchBox";
+import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "home",
   data() {
@@ -154,6 +156,7 @@ export default {
   },
   methods: {
     ...mapMutations(["changeUserId", "changeLoginState", "changeUserInfo"]),
+    ...mapActions(["getGoodsById", "shoppingCartList"]),
     //登录
     userLogin(formName) {
       this.$refs[formName].validate(valid => {
@@ -165,12 +168,13 @@ export default {
                 let _this = this;
                 this.$message.success(res.message || "登录成功");
                 this.changeLoginState(true);
-                this.changeUserId(res.data[0].id); //设置vuex里的userId
+                this.changeUserId(res.data[0].user_id); //设置vuex里的userId
                 this.changeUserInfo(res.data);
+                this.shoppingCartList({ userId: this.userId });
                 console.log(this.userInfo);
               } else {
                 this.$message.error("用户名或密码错误");
-                return
+                return;
               }
             })
             .catch(err => {
@@ -225,10 +229,11 @@ export default {
     ...mapState({
       loginState: state => state.loginState,
       userId: state => state.userId,
-      userInfo: state => state.userInfo
+      userInfo: state => state.userInfo,
+      shoppingCartInfo: state => state.shoppingCartInfo
     })
   },
-  components: {}
+  components: { SearchBox }
 };
 </script>
 <style scoped>

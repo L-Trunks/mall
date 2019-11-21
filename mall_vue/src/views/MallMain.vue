@@ -1,23 +1,17 @@
 <template>
   <div class="home">
-    <el-row class="search_box">
-      <el-col class="search" :span="20" :offset="2">
-        <div class="search_left">
-          <h2>农产品商城</h2>
-          <span>Agricultural Products Mall</span>
-        </div>
-        <!-- <img src="../assets/images/lo.jpeg" class="search_left" alt /> -->
-        <div class="search_center">
-          <el-input placeholder="在此搜索" v-model="search" style="width:280px"></el-input>
-          <el-button type="success" icon="el-icon-search">搜索</el-button>
-        </div>
-        <el-badge :value="0" class="search_right">
-          <el-button size="small" @click="goShopCart" icon="el-icon-shopping-cart-2">购物车</el-button>
-        </el-badge>
-      </el-col>
+    <el-row>
       <!-- 左边导航 -->
       <left-nav></left-nav>
-      <router-view></router-view>
+      <right-view></right-view>
+      <el-col class="goods_box" :span="16" :offset="6">
+        <h1>热销商品</h1>
+        <goods-list class="goods_list" :data="allGoodsList && allGoodsList.slice(0,12) || []"></goods-list>
+      </el-col>
+      <el-col class="goods_box" :span="16" :offset="6">
+        <h1>推荐商品</h1>
+        <goods-list class="goods_list" :data="allGoodsList && allGoodsList.slice(12,20) ||[]"></goods-list>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -33,14 +27,15 @@ import {
 import { mapState, mapMutations, mapActions } from "vuex";
 import LeftNav from "../components/LeftNav";
 import RightView from "../components/RightView";
+import GoodsList from "../components/GoodsList";
 export default {
   name: "mallMain",
   data() {
-    return {
-      search: ""
-    };
+    return {};
   },
   created() {
+    //所有商品列表
+    this.getAllGoodsList();
   },
   methods: {
     ...mapMutations(["changeUserId", "changeLoginState", "changeUserInfo"]),
@@ -52,14 +47,7 @@ export default {
       "getSecondSort",
       "getThirdSort",
       "shoppingCartList"
-    ]),
-    goShopCart() {
-      if (!this.loginState) {
-        this.$message.error("请在左上角登录");
-        return;
-      } else {
-      }
-    }
+    ])
   },
   computed: {
     ...mapState({
@@ -78,23 +66,34 @@ export default {
   },
   components: {
     LeftNav,
-    RightView
+    RightView,
+    GoodsList
   }
 };
 </script>
 <style scoped>
-.search_box {
-  background: #fff;
-}
-.search {
+.goods_box {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  flex-direction: column;
+  /* justify-content: space-around; */
   align-items: center;
-  padding: 20px;
-  border-bottom: 2px solid #67c23a;
+  margin-top: -200px;
 }
-.search_left {
-  color: #67c23a;
+h1 {
+  text-align: center;
+  padding: 20px 0;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-size: 30px;
+  font-weight: 300;
+  color: #777;
+  transition: all 3s;
+}
+h1:hover {
+  color: #519230;
+  transition: all 0.5s;
+}
+.goods_list {
+  border: 1px solid #ddd;
 }
 </style>

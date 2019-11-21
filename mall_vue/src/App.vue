@@ -24,4 +24,13 @@ export default {
 .login .el-form-item{
   margin-bottom: 0px
 }
+.router-link {
+  text-decoration: none;
+}
+.router-link-active {
+  text-decoration: none;
+}
+a {
+  text-decoration: none;
+}
 </style>

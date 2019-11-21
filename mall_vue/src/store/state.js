@@ -10,6 +10,10 @@ const state = {
     shoppingCartInfo:null,
     addressList:null,
     loginState:false,
-    isNav:true
+    isNav:true,
+    sortList:null,
+    orderInfo:null,
+    sortId:null,
+    search:null
 }
 export default state;

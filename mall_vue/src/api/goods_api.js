@@ -10,39 +10,46 @@ export const GetAllGoodsList = () => {
 /**
  * 根据分类获取商品列表
  */
-export const GetGoodsBySort = () => {
-    return get('/goods/get_goods_by_sort')
+export const GetGoodsBySort = (params) => {
+    return get('/goods/get_goods_by_sort', params)
 }
 /**
  * 根据id获取商品信息
  */
-export const GetGoodsById = () => {
-    return get('/goods/get_goods_by_id')
+export const GetGoodsById = (params) => {
+    return get('/goods/get_goods_by_id', params)
+}
+
+/**
+ * 根据店铺获取商品信息
+ */
+export const GetGoodsByShop = (params) => {
+    return get('/goods/get_goods_by_shop', params)
 }
 /**
  * 发布商品
  */
-export const AddGoods = () => {
-    return get('/goods/add_goods')
+export const AddGoods = (params) => {
+    return post('/goods/add_goods', params)
 }
 /**
  * 商品上架
  */
-export const GoodsAddShop = () => {
-    return get('/goods/goods_add_shop')
+export const GoodsAddShop = (params) => {
+    return post('/goods/goods_add_shop', params)
 }
 /**
  * 商品下架
  */
 export const GoodsRemoveShop = (params) => {
-    return get('/goods/goods_remove_shop', params)
+    return post('/goods/goods_remove_shop', params)
 }
 
 /**
  * 修改农产品价格
  */
-export const UpdateGoodsPrice = () => {
-    return get('/goods/update_goods_price')
+export const UpdateGoodsPrice = (params) => {
+    return post('/goods/update_goods_price', params)
 }
 
 /**
@@ -83,9 +90,15 @@ export const RemoveShoppingCartGoods = (params) => {
  * 商品结算
  */
 export const CreateOrder = (params) => {
-    return get('/goods/create_order', params)
+    return post('/goods/create_order', params)
 }
 
+/**
+ * 查询订单列表
+ */
+export const SelectOrderInfo = (params) => {
+    return post('/goods/select_order_info', params)
+}
 /**
  * 查询一级分类
  */
@@ -97,14 +110,14 @@ export const GetFirstSort = (params) => {
  * 查询二级分类
  */
 export const GetSecondSort = (params) => {
-    return post('/goods/get_second_sort', params)
+    return get('/goods/get_second_sort', params)
 }
 
 /**
  * 查询三级分类
  */
 export const GetThirdSort = (params) => {
-    return post('/goods/get_third_sort', params)
+    return get('/goods/get_third_sort', params)
 }
 
 /**

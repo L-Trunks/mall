@@ -44,6 +44,23 @@ const mutations = {
         state.isNav = params;
 
     },
+    changeSortList(state, params) {
+        state.sortList = params;
+
+    },
+    changeOrderInfo(state, params) {
+        state.orderInfo = params;
+
+    },
+    changeSortId(state, params) {
+        state.sortId = params;
+
+    },
+    changeSearch(state, params) {
+        state.search = params;
+
+    }
+
 }
 
 export default mutations
