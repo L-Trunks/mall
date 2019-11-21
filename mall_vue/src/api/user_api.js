@@ -66,7 +66,7 @@ export const BanUser = (params) => {
  * 解禁用户
  */
 export const UnBanUser = (params) => {
-    return post('/user/ban_user', params)
+    return post('/user/un_ban_user', params)
 }
 /**
  * 搜索

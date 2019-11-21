@@ -1,99 +1,102 @@
 <template>
   <div>
-    <left-nav></left-nav>
-    <el-col style="padding:10px" :span="16">
-      <div class="detail_box">
-        <div class="img_box">
-          <img-zoom
-            :src="goodsInfo[0].goods_img && goodsInfo[0].goods_img||imgurl"
-            width="250"
-            height="250"
-            :bigsrc="goodsInfo[0].goods_img && goodsInfo[0].goods_img ||imgurl"
-            :configs="configs"
-          ></img-zoom>
-        </div>
-        <div class="right_view">
-          <h2>{{goodsInfo && goodsInfo[0].goods_name || '出错了'}}</h2>
-          <h4>原价：￥{{goodsInfo && goodsInfo[0].price ||0}}</h4>
-          <h3>现价：￥{{goodsInfo && goodsInfo[0].now_price||0}}</h3>
-          <span>分类：{{goodsInfo && goodsInfo[0].sort_name || ''}}&nbsp;&nbsp;&nbsp;&nbsp;店铺：{{goodsInfo && goodsInfo[0].shop_name || ''}}</span>
-          <el-input-number v-model="count" :min="1"></el-input-number>
-          <h3 style="margin:10px">小计：￥{{goodsInfo && goodsInfo[0].now_price*count ||0}}</h3>
-          <div>
-            <el-button
-              @click="buyShop"
-              class="button"
-              type="danger"
-              　icon="el-icon-coin"
-              size="small"
-            >立即购买</el-button>
-            <el-button
-              @click="addShopCart"
-              class="button"
-              type="success"
-              icon="el-icon-plus"
-              size="small"
-            >加入购物车</el-button>
+    <el-row>
+      <left-nav></left-nav>
+      <el-col style="padding:10px" :span="16">
+        <div class="detail_box">
+          <div class="img_box">
+            <img-zoom
+              :src="goodsInfo[0].goods_img && goodsInfo[0].goods_img||imgurl"
+              width="250"
+              height="250"
+              :bigsrc="goodsInfo[0].goods_img && goodsInfo[0].goods_img ||imgurl"
+              :configs="configs"
+            ></img-zoom>
+          </div>
+          <div class="right_view">
+            <h2>{{goodsInfo && goodsInfo[0].goods_name || '出错了'}}</h2>
+            <h4>原价：￥{{goodsInfo && goodsInfo[0].price ||0}}</h4>
+            <h3>现价：￥{{goodsInfo && goodsInfo[0].now_price||0}}</h3>
+            <span>分类：{{goodsInfo && goodsInfo[0].sort_name || ''}}&nbsp;&nbsp;&nbsp;&nbsp;店铺：{{goodsInfo && goodsInfo[0].shop_name || ''}}</span>
+            <el-input-number v-model="count" :min="1"></el-input-number>
+            <h3 style="margin:10px">小计：￥{{goodsInfo && goodsInfo[0].now_price*count ||0}}</h3>
+            <div>
+              <el-button
+                @click="buyShop"
+                class="button"
+                type="danger"
+                　icon="el-icon-coin"
+                size="small"
+              >立即购买</el-button>
+              <el-button
+                @click="addShopCart"
+                class="button"
+                type="success"
+                icon="el-icon-plus"
+                size="small"
+              >加入购物车</el-button>
+            </div>
           </div>
         </div>
-      </div>
-      <el-tabs v-model="activeName" style="margin-top:20px">
-        <el-tab-pane label="商品详情" name="first">
-          <img
-            width="100%"
-            height="500px"
-            :src="goodsInfo&& goodsInfo[0].goods_bigimg || 'http://www.mini-skirt.top/assets/images/city.jpg'"
-            class="big_img"
-            alt
-          />
-        </el-tab-pane>
-        <el-tab-pane label="商品评价" name="second">
-          <img
-            height="500px"
-            width="100%"
-            src="http://www.mini-skirt.top/assets/images/city.jpg"
-            class="big_img"
-            alt
-          />
-        </el-tab-pane>
-        <el-tab-pane label="买家问答" name="third">
-          <img
-            height="500px"
-            width="100%"
-            src="http://www.mini-skirt.top/assets/images/city.jpg"
-            class="big_img"
-            alt
-          />
-        </el-tab-pane>
-      </el-tabs>
-    </el-col>
-    <el-dialog title="确认订单" :visible.sync="dialogFormVisible">
-      <el-form v-loading="loading" :model="orderForm">
-        <el-form-item label="商品名称：">
-          <el-input v-model="orderForm.goods_name" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="发货地：">
-          <el-input v-model="orderForm.sendPlace" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item required label="收货地：">
-          <el-input v-model="orderForm.achievePlace" autocomplete="off"></el-input>
-          <!-- <el-cascader v-model="orderForm.achievePlace" :options="options"></el-cascader> -->
-        </el-form-item>
-        <el-form-item label="收货人：">
-          <el-input v-model="orderForm.userName" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号：">
-          <el-input v-model="orderForm.phone" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="总价">
-          <el-input v-model="orderForm.priceTotal" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="danger" @click="createOrder">结算</el-button>
-      </div>
-    </el-dialog>
+        <el-tabs v-model="activeName" style="margin-top:20px">
+          <el-tab-pane class="goods_detail" label="商品详情" name="first">
+            <span style="color:#333; padding:20px;margin:20px;font-size:14px">{{goodsInfo[0].goods_info}}</span>
+            <img
+              width="100%"
+              height="500px"
+              :src="goodsInfo&& goodsInfo[0].goods_bigimg || 'http://www.mini-skirt.top/assets/images/city.jpg'"
+              class="big_img"
+              alt
+            />
+          </el-tab-pane>
+          <el-tab-pane label="商品评价" name="second">
+            <img
+              height="500px"
+              width="100%"
+              src="http://www.mini-skirt.top/assets/images/city.jpg"
+              class="big_img"
+              alt
+            />
+          </el-tab-pane>
+          <el-tab-pane label="买家问答" name="third">
+            <img
+              height="500px"
+              width="100%"
+              src="http://www.mini-skirt.top/assets/images/city.jpg"
+              class="big_img"
+              alt
+            />
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+      <el-dialog title="确认订单" :visible.sync="dialogFormVisible">
+        <el-form v-loading="loading" :model="orderForm">
+          <el-form-item label="商品名称：">
+            <el-input v-model="orderForm.goods_name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="发货地：">
+            <el-input v-model="orderForm.sendPlace" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item required label="收货地：">
+            <el-input v-model="orderForm.achievePlace" autocomplete="off"></el-input>
+            <!-- <el-cascader v-model="orderForm.achievePlace" :options="options"></el-cascader> -->
+          </el-form-item>
+          <el-form-item label="收货人：">
+            <el-input v-model="orderForm.userName" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号：">
+            <el-input v-model="orderForm.phone" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="总价">
+            <el-input v-model="orderForm.priceTotal" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="danger" @click="createOrder">结算</el-button>
+        </div>
+      </el-dialog>
+    </el-row>
   </div>
 </template>
 

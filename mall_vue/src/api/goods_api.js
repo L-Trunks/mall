@@ -19,7 +19,12 @@ export const GetGoodsBySort = (params) => {
 export const GetGoodsById = (params) => {
     return get('/goods/get_goods_by_id', params)
 }
-
+/**
+ * 商品销量统计
+ */
+export const GetGoodsCount = (params) => {
+    return get('/goods/goods_count', params)
+}
 /**
  * 根据店铺获取商品信息
  */

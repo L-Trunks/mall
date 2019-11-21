@@ -72,35 +72,35 @@ export class _mysql {
     }
     //申请成为商家
     addShopUser(callback) {
-        this.connection.query('update t_user set permission = 1 where user_id = ?', [this.getData.userId], function (err, rs, fields) {
+        this.connection.query('update t_user set permission = 1 where id = ?', [this.getData.userId], function (err, rs, fields) {
             console.log(rs)
             return callback(err, rs, fields)
         })
     }
     //批准成为商家
     addShopUserAsk(callback) {
-        this.connection.query('update t_user set permission = 3 where user_id = ?', [this.getData.userId], function (err, rs, fields) {
+        this.connection.query('update t_user set permission = 3 where id = ?', [this.getData.userId], function (err, rs, fields) {
             console.log(rs)
             return callback(err, rs, fields)
         })
     }
     //封禁用户
     banUser(callback) {
-        this.connection.query('update t_user set permission = 4 where user_id = ?', [this.getData.userId], function (err, rs, fields) {
+        this.connection.query('update t_user set permission = 4 where id = ?', [this.getData.userId], function (err, rs, fields) {
             console.log(rs)
             return callback(err, rs, fields)
         })
     }
     //解禁用户
     unBanUser(callback) {
-        this.connection.query('update t_user set permission = 0 where user_id = ?', [this.getData.userId], function (err, rs, fields) {
+        this.connection.query('update t_user set permission = 0 where id = ?', [this.getData.userId], function (err, rs, fields) {
             console.log(rs)
             return callback(err, rs, fields)
         })
     }
     //修改个人信息
     update_user_info(callback) {
-        this.connection.query('update t_user set user_name = ?,introduce = ?,email =? where user_id = ?',
+        this.connection.query('update t_user set user_name = ?,introduce = ?,email =? where id = ?',
             [this.getData.userName, this.getData.introduce, this.getData.email, this.getData.userId], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
@@ -108,8 +108,8 @@ export class _mysql {
     }
     //农产品模糊查询
     searchGoods(callback) {
-        this.connection.query("select g.*,s.sort_name,p.shop_name from t_goods_info g,t_sort s,t_shop_info p where g.goods_name like '% " + this.getData.search + "%' and g.is_shop = 1 and g.sort_id = s.id and g.shop_id = p.id",
-            [], function (err, rs, fields) {
+        this.connection.query("select g.*,s.sort_name,p.shop_name from t_goods_info g,t_sort s,t_shop_info p where g.goods_name like '%" + this.getData.search + "%' and g.is_shop = 1 and g.sort_id = s.id and g.shop_id = p.id",
+             function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
             })
@@ -146,11 +146,20 @@ export class _mysql {
                 return callback(err, rs, fields)
             })
     }
+    //商品销量统计
+    getGoodsCount(callback) {
+        this.connection.query('select s.*,g.sales_volume from t_sort s,t_goods_info g where s.id = g.sort_id and s.level = 0 ',
+            [], function (err, rs, fields) {
+            
+                console.log(rs)
+                return callback(err, rs, fields)
+            })
+    }
     //发布商品
     addGoods(callback) {
-        this.connection.query('insert into t_goods_info (goods_name,goods_info,goods_img,goods_bigimg,price,user_id,sort_id,send_palce,shop_id,is_shop,shipping) value (?,?,?,?,?,?,?,?,?,?,?)',
+        this.connection.query('insert into t_goods_info (goods_name,goods_info,goods_img,goods_bigimg,price,user_id,sort_id,send_palce,shop_id,is_shop,shipping,now_price) value (?,?,?,?,?,?,?,?,?,?,?,?)',
             [this.getData.goodsName, this.getData.goodsInfo, this.getData.goodsImg, this.getData.goodsBigImg, this.getData.price,
-            this.getData.userId, this.getData.sortId, this.getData.sendPlace, this.getData.shopId, this.getData.isShop, this.getData.shipping], function (err, rs, fields) {
+            this.getData.userId, this.getData.sortId, this.getData.sendPlace, this.getData.shopId, this.getData.isShop, this.getData.shipping,this.getData.nowPrice], function (err, rs, fields) {
                 console.log(rs)
                 return callback(err, rs, fields)
             })

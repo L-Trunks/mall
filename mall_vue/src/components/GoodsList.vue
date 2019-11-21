@@ -4,7 +4,7 @@
       <el-card class="card" shadow="hover">
         <img
           @click="goGoodsDetails(item)"
-          src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+          :src="item.goods_img"
           class="image"
         />
         <div class="card_box">
@@ -61,5 +61,9 @@ export default {
   flex-direction: column;
   align-items: center;
   margin: 20px;
+}
+.image{
+  width: 200px;
+  height: 200px;
 }
 </style>

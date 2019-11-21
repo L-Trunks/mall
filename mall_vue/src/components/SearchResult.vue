@@ -8,7 +8,7 @@
           <el-card class="card" shadow="hover">
             <img
               @click="goGoodsDetails(item)"
-              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+              :src="item.goods_img"
               class="image"
             />
             <div class="card_box">
@@ -18,7 +18,7 @@
                 <el-button class="button" size="mini">{{item.sort_name}}</el-button>
               </div>
               <div style="color:#888;font-size:14px;margin-top:5px">
-                <el-button @click="goShop(item)" class="button" size="mini">{{item.shop_name}}</el-button>
+                <el-button class="button" size="mini">{{item.shop_name}}</el-button>
               </div>
             </div>
           </el-card>
@@ -95,5 +95,9 @@ export default {
 }
 .goods_list_view {
   border: 1px solid #ddd;
+}
+.image {
+  width: 200px;
+  height: 200px;
 }
 </style>

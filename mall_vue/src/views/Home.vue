@@ -58,10 +58,16 @@
       </div>
     </el-dialog>
     <router-view></router-view>
+    <el-row :span="24">
+      <el-col :span="24">
+     <m-footer></m-footer>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
+import MFooter from '../components/Mfooter'
 import {
   UserLogin,
   UserRegister,
@@ -233,7 +239,7 @@ export default {
       shoppingCartInfo: state => state.shoppingCartInfo
     })
   },
-  components: { SearchBox }
+  components: { SearchBox ,MFooter}
 };
 </script>
 <style scoped>

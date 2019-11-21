@@ -4,7 +4,7 @@
       <!-- 左边导航 -->
       <left-nav></left-nav>
       <right-view></right-view>
-      <el-col class="goods_box" :span="16" :offset="6">
+      <el-col class="goods_box" style="margin-top: -200px;" :span="16" :offset="6">
         <h1>热销商品</h1>
         <goods-list class="goods_list" :data="allGoodsList && allGoodsList.slice(0,12) || []"></goods-list>
       </el-col>
@@ -77,7 +77,7 @@ export default {
   flex-direction: column;
   /* justify-content: space-around; */
   align-items: center;
-  margin-top: -200px;
+  
 }
 h1 {
   text-align: center;

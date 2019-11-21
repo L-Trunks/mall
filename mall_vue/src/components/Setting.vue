@@ -1,5 +1,7 @@
 <template>
   <div>
+    <el-row>
+    
     <left-nav></left-nav>
     <el-col style="padding:10px" :span="16">
       <el-tabs tab-position="right" style="padding:10px">
@@ -131,7 +133,9 @@
             </el-collapse-item>
           </el-collapse>
         </el-tab-pane>
-        <el-tab-pane label="销售统计">销售统计</el-tab-pane>
+        <el-tab-pane label="销售统计">
+          <div id="myChart" :style="{width: '900px', height: '600px'}"></div>
+        </el-tab-pane>
       </el-tabs>
     </el-col>
     <el-dialog title="用户信息" :visible.sync="dialogFormVisible">
@@ -176,10 +180,13 @@
         <el-button type="primary" @click="updateSort">确 定</el-button>
       </div>
     </el-dialog>
+      
+    </el-row>
   </div>
 </template>
 
 <script>
+import echarts from "echarts";
 import {
   GetUserList,
   UserGetShopAsk, //批准成为商家
@@ -188,6 +195,7 @@ import {
 } from "../api/user_api";
 import {
   banShop,
+  GetGoodsCount, //商品销量统计
   unBanShop,
   DeleteSort, //删除分类
   UpdateSort, //编辑分类
@@ -220,11 +228,10 @@ export default {
         3: "商家",
         4: "封禁中"
       },
-      shopStateMap:{
-          0:'封禁中',
-          1:'已开通',
-          2:'未开通'
-
+      shopStateMap: {
+        0: "封禁中",
+        1: "已开通",
+        2: "未开通"
       },
       userShopTableData: [],
       sortData: [],
@@ -239,7 +246,11 @@ export default {
         userId: null,
         sortId: null
       },
-      showThirdData: []
+      showThirdData: [],
+      echartsData: {
+        xAxis: [],
+        data: []
+      }
     };
   },
   created() {
@@ -253,6 +264,7 @@ export default {
       this.getSecondSort();
       this.getThirdSort();
       this.getSortList();
+      this.drawLine();
     }
   },
   methods: {
@@ -271,6 +283,44 @@ export default {
       "getThirdSort",
       "shoppingCartList"
     ]),
+    //统计销量
+    setGoodsCount() {
+      this.echartsData.xAxis = this.firstSortList.map(v => {
+        return v.sort_name;
+      });
+      GetGoodsCount().then(res => {
+        let xAxis = [],data = []
+        res.data && res.data.map(v => {
+          xAxis.push(v.sort_name);
+          data.push(v.sales_volume);
+        });
+        this.echartsData.xAxis = xAxis
+        this.echartsData.data = data
+        this.drawLine(this.echartsData);
+        console.log(this.echartsData);
+      });
+    },
+    //设置图表数据
+    drawLine(data) {
+      let myChart = echarts.init(document.getElementById("myChart"));
+      // 绘制图表
+      myChart.setOption({
+        title: { text: "各分类销量展示" },
+        tooltip: {},
+        xAxis: {
+          data: (this.echartsData && this.echartsData.xAxis) || []
+        },
+        yAxis: {},
+        series: [
+          {
+            name: "销量",
+            type: "bar",
+            data: (this.echartsData && this.echartsData.data) || []
+          }
+        ]
+      });
+      console.log(data);
+    },
     //获取分类列表
     getSortList() {
       this.loading = true;
@@ -456,7 +506,7 @@ export default {
       GetUserList()
         .then(res => {
           this.userTableData = res.data;
-          this.userShopTableData = this.userTableData
+          this.userShopTableData = this.userTableData;
           console.log(res);
         })
         .catch(err => {
@@ -620,16 +670,19 @@ export default {
     firstSortList() {
       //   this.$nextTick(function() {
       this.getSortList();
+      this.setGoodsCount();
       //   });
     },
     secondSortList() {
       //   this.$nextTick(function() {
       this.getSortList();
+      this.setGoodsCount();
       //   });
     },
     thirdSortList() {
       //   this.$nextTick(function() {
       this.getSortList();
+      this.setGoodsCount();
       //   });
     }
   }

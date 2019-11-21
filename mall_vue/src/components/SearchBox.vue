@@ -16,28 +16,42 @@
       </el-badge>
     </el-col>
     <el-drawer title="购物车" :visible.sync="drawer" direction="ttb" :before-close="handleClose">
-      <el-checkbox-group
-        class="cart_list"
+      <el-table
+        ref="multipleTable"
+        :data="shoppingCartInfo"
+        tooltip-effect="dark"
+        style="width: 100%;margin-top:-30px"
+        height="300"
         v-model="checkedGoods"
-        @change="handleCheckedCitiesChange"
+        @selection-change="handleCheckedCitiesChange"
       >
-        <el-checkbox
-          :label="item.now_price*item.count"
-          :false-label="0"
-          class="cart_item"
-          v-for="(item,index) in shoppingCartInfo"
-          :key="item.total"
-        >
-          <div>
-            <img width="80px" height="80px" :src="item.goods_img" alt="..." />
-            商品名
-            <el-input style="width:240px" v-model="item.goods_name" disabled></el-input>
-            <el-input-number style="width:120px" disabled v-model="item.count" :min="1"></el-input-number>单价：
-            <el-input style="width:80px" v-model="item.now_price" disabled></el-input>总计：
-            <el-input style="width:80px" v-model="item.now_price*item.count" disabled></el-input>
-          </div>
-        </el-checkbox>
-      </el-checkbox-group>
+        <el-table-column type="selection" width="240"></el-table-column>
+        <el-table-column width="240" label="商品图片">
+          <template slot-scope="scope">
+            <img width="240px" height="240px" :src="scope.row.goods_img" alt="..." />
+          </template>
+        </el-table-column>
+        <el-table-column width="240" label="商品名">
+          <template slot-scope="scope">
+            <el-input style="width:240px" v-model="scope.row.goods_name" disabled></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column width="240" label="数量">
+          <template slot-scope="scope">
+            <el-input-number style="width:240px" disabled v-model="scope.row.count" :min="1"></el-input-number>
+          </template>
+        </el-table-column>
+        <el-table-column width="240" label="单价">
+          <template slot-scope="scope">
+            <el-input style="width:80px" v-model="scope.row.now_price" disabled></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column width="240" label="总计">
+          <template slot-scope="scope">
+            <el-input style="width:80px" v-model="scope.row.now_price*scope.row.count" disabled></el-input>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <div class="cart_btn">
         合计：{{totalMoney}}
@@ -77,7 +91,11 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
-import { ShoppingCartList, CreateOrder } from "../api/goods_api";
+import {
+  ShoppingCartList,
+  CreateOrder,
+  RemoveShoppingCartGoods
+} from "../api/goods_api";
 export default {
   name: "searchBox",
   data() {
@@ -88,7 +106,8 @@ export default {
       totalMoney: 0,
       orderForm: {},
       checkedGoods: [],
-      loading: false
+      loading: false,
+      cartArr: [] //结算商品购物车id
     };
   },
   methods: {
@@ -96,7 +115,10 @@ export default {
     ...mapMutations(["changeSearch"]),
     goSearchResult() {
       this.changeSearch(this.searchs);
-      this.$router.push({ path: "/search_result", query: { search: this.searchs } });
+      this.$router.push({
+        path: "/search_result",
+        query: { search: this.searchs }
+      });
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -106,9 +128,21 @@ export default {
         .catch(_ => {});
     },
     //复选框改变事件
-    handleCheckedCitiesChange() {
+    handleCheckedCitiesChange(val) {
+      console.log(val);
+      this.checkedGoods = val;
       console.log(this.checkedGoods);
-      this.totalMoney = eval(this.checkedGoods.join("+"));
+      let total = 0;
+      this.checkedGoods.map(k => {
+        total += k.count * k.now_price;
+      });
+      this.totalMoney = total;
+      this.getGoodsById({
+        goodsId:
+          (this.checkedGoods &&
+            this.checkedGoods[this.checkedGoods.length - 1].goods_id) ||
+          null
+      });
     },
     handleChange() {},
     buyShopCart() {
@@ -129,6 +163,7 @@ export default {
           phone: this.userInfo[0].phone
         };
         this.dialogFormVisible = true;
+        this.drawer = false;
       }
     },
     goShopCart() {
@@ -145,19 +180,43 @@ export default {
     },
     createOrder() {
       this.loading = true;
-      CreateOrder({ params: this.orderForm })
-        .then(res => {
-          console.log(res);
-          setTimeout(() => {
-            this.$message.success("购买成功");
-            this.loading = false;
-            this.dialogFormVisible = false;
-          }, 2000);
-        })
-        .catch(err => {
-          console.log(err);
-          this.$message.error("服务器跑丢了");
+      console.log(this.checkedGoods);
+      //移除购物车商品
+      let cartArr = [];
+      this.checkedGoods.map(v => {
+        this.shoppingCartInfo.map(k => {
+          if (k.goods_id === v.goods_id) {
+            cartArr.push(k.id);
+          }
         });
+      });
+      this.cartArr = cartArr;
+      this.cartArr.map(v => {
+        RemoveShoppingCartGoods({ params: { cartGoodsId: v } })
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      });
+      this.checkedGoods.map(v => {
+        this.orderForm.goodsId = v.goods_id;
+        CreateOrder({ params: this.orderForm })
+          .then(res => {
+            console.log(res);
+            setTimeout(() => {
+              this.$message.success("购买成功");
+              this.loading = false;
+              this.dialogFormVisible = false;
+              this.shoppingCartList({ params: { userId: this.userId } });
+            }, 2000);
+          })
+          .catch(err => {
+            console.log(err);
+            this.$message.error("服务器跑丢了");
+          });
+      });
     }
   },
   computed: {
@@ -200,6 +259,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding-left: 50px;
+  overflow-y: scroll;
 }
 .cart_btn {
   position: absolute;
@@ -207,7 +267,6 @@ export default {
   right: 20px;
 }
 .cart_item {
-  margin-top: 10px;
   display: flex;
   width: 80%;
   flex-direction: row;

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view></router-view>
+   
   </div>
 </template>
 
@@ -9,6 +10,7 @@
 export default {
   name: 'app',
   components: {
+    
   }
 }
 </script>
@@ -19,7 +21,7 @@ export default {
   padding: 0
 }
 #app {
-  overflow-x: hidden
+
 }
 .login .el-form-item{
   margin-bottom: 0px
