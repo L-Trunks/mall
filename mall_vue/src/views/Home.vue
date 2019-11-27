@@ -46,7 +46,7 @@
           <el-input type="password" v-model="registerForm.confirmPassWord"></el-input>
         </el-form-item>
         <el-form-item label="邮箱：" :label-width="formLabelWidth" prop="email">
-          <el-input v-model="registerForm.email"></el-input>
+          <el-input type="email" v-model="registerForm.email"></el-input>
         </el-form-item>
         <el-form-item label="个人简介：" :label-width="formLabelWidth" prop="introduce">
           <el-input type="textarea" v-model="registerForm.introduce"></el-input>
@@ -60,14 +60,14 @@
     <router-view></router-view>
     <el-row :span="24">
       <el-col :span="24">
-     <m-footer></m-footer>
+        <m-footer></m-footer>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import MFooter from '../components/Mfooter'
+import MFooter from "../components/Mfooter";
 import {
   UserLogin,
   UserRegister,
@@ -118,6 +118,27 @@ export default {
         callback();
       }
     };
+    function checkEmail(text) {
+      if (text.match(/qq\.com$/)) {
+        return -1;
+      }
+      if (!text.match(/^\w+([._-]\w+)*@(\w+\.)+\w+$/)) {
+        return false;
+      }
+      return true;
+    }
+    let emailCheck = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入邮箱"));
+      } else {
+        let check = checkEmail(value);
+        if (check) {
+          callback();
+        } else {
+          callback(new Error("请输入正确的邮箱格式!"));
+        }
+      }
+    };
     return {
       dialogFormVisible: false, //是否打开弹出框
       formLabelWidth: "120px",
@@ -156,7 +177,8 @@ export default {
           { required: true, message: "请输入用户名", trigger: "blur" }
         ],
         passWord: [{ validator: checkpassWord, trigger: "blur" }],
-        confirmPassWord: [{ validator: checkconfirmPassWord, trigger: "blur" }]
+        confirmPassWord: [{ validator: checkconfirmPassWord, trigger: "blur" }],
+        email: [{ validator: emailCheck, trigger: "blur" }]
       }
     };
   },
@@ -239,7 +261,7 @@ export default {
       shoppingCartInfo: state => state.shoppingCartInfo
     })
   },
-  components: { SearchBox ,MFooter}
+  components: { SearchBox, MFooter }
 };
 </script>
 <style scoped>
